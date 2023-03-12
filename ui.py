@@ -31,25 +31,24 @@ def header_ui(title="Bacardi Demand Forecasting"):
         unsafe_allow_html=True,
     )
 
-    metric_style = f"""
+    metric_style = """
     <style>
-    div.css-1r6slb0.e1tzin5v2 {{ 
-        border: 1.5px solid black;
-        padding: 5px;
-        text-align: center;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        background-color: #F9F9F9;
-        }}
-    div.row-widget.stButton {{
-        text-align: center;
-    }}
-    button.css-629wbf.edgvbvh10 {{
-        border: 1px solid black;
-        background-color: #004B93;
-        color: white;
-        margin: auto;
-    }}
+ div[data-testid="metric-container"] {
+   background-color: rgba(28, 131, 225, 0.1);
+   border: 1px solid rgba(28, 131, 225, 0.1);
+   height: 120px;
+   padding: 5% 5% 5% 10%;
+   border-radius: 5px;
+   color: rgb(30, 103, 119);
+   overflow-wrap: break-word;
+}
+
+/* breakline for metric text         */
+div[data-testid="metric-container"] > label[data-testid="stMetricLabel"] > div {
+   overflow-wrap: break-word;
+   white-space: break-spaces;
+   color: red;
+}
     <style>
     """
     st.markdown(metric_style, unsafe_allow_html=True)
@@ -101,3 +100,4 @@ def add_logo(png_file):
 def sidebar_ui():
     img = "./Bacardi-logo.png"
     add_logo(img)
+
