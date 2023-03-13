@@ -4,9 +4,9 @@ import streamlit as st
 import numpy as np
 
 # Header
+st.set_page_config(layout="wide")
 header_ui()
 sidebar_ui()
-
 # Read data
 df = read_app_data()
 

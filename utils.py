@@ -199,44 +199,68 @@ def read_scenario_details():
 
 # @st.cache_data()
 def read_scenario_planner():
-    df = pd.read_excel("data/scenarios.xlsx", sheet_name="planner")
+    df = pd.read_excel("data/scenarios.xlsx", sheet_name="planner1")
+    df["allocation"] = df["allocation"] * 100
     return df
 
 
 def gen_aggrid_sc(df):
+    sel_cols = [
+        "sku",
+        "age",
+        "allocation",
+        "exp_price",
+        "cost",
+        "demand",
+    ]
+    df = df[sel_cols]
     gd = GridOptionsBuilder.from_dataframe(df)
     # gd.configure_default_column(hide=True, editable=False)
+
     gd.configure_column(
-        field="current",
-        header_name="Current",
-        hide=False,
-        type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
-        valueFormatter="data.revenue.toLocaleString('en-US');",
-        editable=True,
+        field="sku", header_name="SKU", hide=False, editable=False,
     )
 
     gd.configure_column(
-        field="year_1",
-        header_name="Year 1",
+        field="age",
+        header_name="Aged Years",
         hide=False,
         type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
-        valueFormatter="data.revenue.toLocaleString('en-US');",
-        editable=True,
+        valueFormatter="data.age.toLocaleString('en-US');",
+        editable=False,
+    )
+
+    gd.configure_column(
+        field="exp_price",
+        header_name="Expected Price (per case)",
+        hide=False,
+        type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+        valueGetter="data.exp_price.toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits:0})",
+        editable=False,
     )
     gd.configure_column(
-        field="year_2",
-        header_name="Year 2",
+        field="cost",
+        header_name="Capital Costs	",
         hide=False,
         type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
-        valueFormatter="data.revenue.toLocaleString('en-US');",
-        editable=True,
+        valueGetter="data.cost.toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits:0})",
+        editable=False,
     )
     gd.configure_column(
-        field="year_3",
-        header_name="Year 3",
+        field="demand",
+        header_name="Demand",
         hide=False,
         type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
-        valueFormatter="data.revenue.toLocaleString('en-US');",
+        valueFormatter="data.demand.toLocaleString('en-US');",
+        editable=False,
+    )
+    gd.configure_column(
+        field="allocation",
+        header_name="Allocation",
+        hide=False,
+        type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+        # valueGetter="data.allocation.toLocaleString('en-US', {style: 'percent', maximumFractionDigits:0,minimumFractionDigits:0})",
+        valueFormatter="data.allocation.toLocaleString() + '%'",
         editable=True,
     )
     return gd

@@ -16,7 +16,7 @@ def gen_inv_ui():
     # Divide into columns
     col1, col2, col3, col4, col5 = st.columns(5)
 
-    market_filter = col1.selectbox(label="Market", options=markets)
+    market_filter = col1.selectbox(label="Market", options=markets, key="inv_market")
 
     categories = df.loc[df["Market"] == market_filter]["Category"].unique()
     cat_filter = col2.selectbox(label="Category", options=categories)
@@ -31,7 +31,10 @@ def gen_inv_ui():
 
     time_per = df["Year"].unique().tolist()
     time_filter = col5.slider(
-        "Time Period", min_value=min(time_per), max_value=max(time_per)
+        "Time Period",
+        min_value=min(time_per),
+        max_value=max(time_per),
+        key="inv_slider",
     )
 
     cond1 = df["Market"] == market_filter

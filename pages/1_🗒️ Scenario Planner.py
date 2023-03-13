@@ -18,8 +18,14 @@ custom_css = {
     "cellStyle": {"textAlign": "center"},
 }
 
+
 # Aggrid generation
 sc_data = read_scenario_planner()
+categories = sc_data["category"].unique().tolist()
+category_filter = st.sidebar.selectbox("Category", options=categories)
+sc_data = sc_data.loc[sc_data["category"]==category_filter]
+capacity = sc_data["capacity"].max()
+st.sidebar.text_input(label="Maximum Capacity", value=capacity, disabled=False)
 gd = gen_aggrid_sc(sc_data)
 grid_options = gd.build()
 grid_table = AgGrid(
@@ -34,6 +40,7 @@ grid_table = AgGrid(
     allow_unsafe_jscode=True
 )
 
+#st.write(grid_table)
 metric_style = """
 <style>
 div.stButton > button:first-child {
@@ -45,8 +52,22 @@ div.stButton > button:first-child {
 #     color:#ffffff;
 #     }
 div.row-widget.stButton {
-        text-align: center;
+        text-align: right;
     }
 </style>"""
-#st.markdown(metric_style, unsafe_allow_html=True)
-st.button(label="Run Scenario")
+st.markdown(metric_style, unsafe_allow_html=True)
+
+def on_click_but():
+    st.session_state["button_pressed"]=1
+st.button(label="Run Scenario", on_click=on_click_but)
+
+if st.session_state.get("button_pressed",0)==1:
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(value="$275K", label="Revenue ($)", delta="10% (From Baseline)")
+    with col2:
+        st.metric(value="$25K", label="Cost ($)", delta="-5% (From Baseline)", delta_color="inverse")
+    with col3:
+        st.metric(value="$100K", label="Profit", delta="10% (From Baseline)")
+
+

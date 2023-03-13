@@ -15,10 +15,13 @@ def gen_cash_ui():
 
     # Divide into columns
     col1, col2 = st.columns(2)
-    market_filter = col1.selectbox(label="Market", options=markets)
+    market_filter = col1.selectbox(label="Market", options=markets, key="cash_market")
     time_per = df["Year"].unique().tolist()
     time_filter = col2.slider(
-        "Time Period", min_value=min(time_per), max_value=max(time_per)
+        "Time Period",
+        min_value=min(time_per),
+        max_value=max(time_per),
+        key="cash_slider",
     )
 
     cond1 = df["Market"] == market_filter
