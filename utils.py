@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import plotly.express as px
 from matplotlib.colors import LinearSegmentedColormap
 from st_aggrid import (
@@ -64,42 +65,17 @@ def read_data(file_name, separator=";"):
 
 @st.cache_data()
 def read_app_data():
-    df = pd.read_csv("data/sales_data.csv")
-    df["Market"] = "USA"
+    df = pd.read_excel("data/Bacardi-ToolData.xlsx", sheet_name="Data")
+    df["Date"] = "01-01-" + df["Year"].astype(str)
+    df["Date"] = pd.to_datetime(df["Date"], format="%d-%m-%Y")
     return df
 
 
-def build_line_chart(df, x_col="Date", y_col="Units"):
+def build_line_chart(df, x_col="Date", y_col="Units", color_col="SKU"):
     # color = ["#D01E2F" if x == 0 else "goldenrod" for x in pred_flag]
-    x_data = df[x_col]
-    y_data = df[y_col]
-    fig = go.Figure()
-    fig = fig.add_trace(
-        go.Scatter(
-            x=x_data,
-            y=y_data,
-            mode="lines",
-            line={"color": "#D01E2F", "width": 2, "dash": "dot"},
-            name="Historical Sales"
-            # line_color=color,
-        )
-    )
-
-    x_data = df.loc[df["pred_flag"] == 1][x_col]
-    y_data = df.loc[df["pred_flag"] == 1][y_col]
-    fig = fig.add_trace(
-        go.Scatter(
-            x=x_data,
-            y=y_data,
-            mode="lines+markers",
-            line={"color": "#27A844", "width": 2},
-            name="Predictions"
-            # line_color=color,
-        )
-    )
-    fig.update_xaxes(
-        showgrid=False, ticklabelmode="period", dtick="M1", tickformat="%m-%d-%Y"
-    )
+    fig = px.line(df, x=x_col, y=y_col, color=color_col)
+    fig.update_traces(line={"width": 3})
+    fig.update_xaxes(showgrid=False, ticklabelmode="period", tickformat="%Y")
     fig.update_layout(
         legend=dict(yanchor="bottom", xanchor="center", orientation="h", y=-0.5, x=0.5)
     )
@@ -264,3 +240,23 @@ def gen_aggrid_sc(df):
         editable=True,
     )
     return gd
+
+
+def mult_yaxis_plot(x_data, y1_data, y2_data, y1_name=None, y2_name=None, colors=None):
+    # Create figure with secondary y-axis
+    y1_name = "yaxis data" if y1_name is None else y1_name
+    y2_name = "yaxis2 data" if y2_name is None else y2_name
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    colors = "#49246C" if None else colors
+    # Add traces
+    fig.add_trace(
+        go.Scatter(x=x_data, y=y1_data, name=y1_name, line={"width": 3}),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=x_data, y=y2_data, name=y2_name, line={"color": "#CD0F26", "width": 3}
+        ),
+        secondary_y=True,
+    )
+    return fig

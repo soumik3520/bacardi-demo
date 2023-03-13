@@ -1,6 +1,11 @@
 import streamlit as st
 from ui import header_ui, sidebar_ui
-from utils import read_scenario_data, gen_aggrid, read_scenario_details
+from utils import (
+    read_scenario_data,
+    gen_aggrid,
+    read_scenario_details,
+    format_layout_fig,
+)
 from st_aggrid import (
     AgGrid,
     GridOptionsBuilder,
@@ -10,7 +15,7 @@ from st_aggrid import (
 )
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
-
+import plotly.express as px
 
 # Header
 header_ui()
@@ -50,55 +55,89 @@ grid_table = AgGrid(
 )
 
 selected_row = grid_table["selected_rows"]
-sel_scenario = [x["Name"] for x in selected_row]
 
-if len(sel_scenario) > 0:
+if len(selected_row) > 0:
     st.write("## Comparison of Selected Scenarios")
-    sel_cols = ["Metric"] + sel_scenario
-    details_df = read_scenario_details()
-    details_df = details_df[sel_cols]
-    details_df = details_df.set_index("Metric")
+    selected_df = pd.DataFrame(selected_row)
+    sel_cols = ["Name", "revenue", "cost", "profit"]
+    selected_df = selected_df[sel_cols]
 
-    temp = LinearSegmentedColormap.from_list("rg", ["r", "w", "g"], N=256)
-    details_df = details_df.style.background_gradient(
-        cmap=temp, axis=1, subset=pd.IndexSlice[["Profit", "% Profit"], :]
+    selected_df = selected_df.rename(
+        columns={
+            "index": "Metric",
+            "Name": "Scenario",
+            "revenue": "Revenue",
+            "cost": "Cost",
+            "profit": "Profit",
+        }
     )
+    selected_df = selected_df.set_index("Scenario")
+    selected_df = selected_df.T.reset_index()
+    # st.dataframe(selected_df)
+    fig = px.histogram(
+        selected_df,
+        x="index",
+        y=[x for x in selected_df.columns if x != "index"],
+        barmode="group",
+        text_auto=".2s",
+    )
+    fig = format_layout_fig(fig, title="Scenario Comparison", x_axis_title="")
+    fig = fig.update_layout(
+        legend=dict(
+            yanchor="bottom", xanchor="center", orientation="h", y=-0.5, x=0.5, title=""
+        ),
+        yaxis_title="Value ($show)",
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
-    details_df = details_df.format(
-        formatter="{:.0%}",
-        subset=pd.IndexSlice[
-            [
-                "% Profit",
-                "Allocation Current",
-                "Allocation Year 1",
-                "Allocation Year 2",
-                "Allocation Year 3",
-            ],
-            :,
-        ],
-    )
+# sel_scenario = [x["Name"] for x in selected_row]
+# if len(sel_scenario) > 0:
+#     st.write("## Comparison of Selected Scenarios")
+#     sel_cols = ["Metric"] + sel_scenario
+#     details_df = read_scenario_details()
+#     details_df = details_df[sel_cols]
+#     details_df = details_df.set_index("Metric")
 
-    details_df = details_df.format(
-        formatter="{:,.0f}",
-        subset=pd.IndexSlice[
-            [
-                "Profit",
-                "Price Current",
-                "Price Year 1",
-                "Price Year 2",
-                "Price Year 3",
-                "Inventory Holding Cost Current",
-                "Inventory Holding Cost Year 1",
-                "Inventory Holding Cost Year 2",
-                "Inventory Holding Cost Year 3",
-                "Demand Current",
-                "Demand Year 1",
-                "Demand Year 2",
-                "Demand Year 3",
-                "Revenue",
-                "Cost",
-            ],
-            :,
-        ],
-    )
-    st.dataframe(details_df, use_container_width=True)
+#     temp = LinearSegmentedColormap.from_list("rg", ["r", "w", "g"], N=256)
+#     details_df = details_df.style.background_gradient(
+#         cmap=temp, axis=1, subset=pd.IndexSlice[["Profit", "% Profit"], :]
+#     )
+
+#     details_df = details_df.format(
+#         formatter="{:.0%}",
+#         subset=pd.IndexSlice[
+#             [
+#                 "% Profit",
+#                 "Allocation Current",
+#                 "Allocation Year 1",
+#                 "Allocation Year 2",
+#                 "Allocation Year 3",
+#             ],
+#             :,
+#         ],
+#     )
+
+#     details_df = details_df.format(
+#         formatter="{:,.0f}",
+#         subset=pd.IndexSlice[
+#             [
+#                 "Profit",
+#                 "Price Current",
+#                 "Price Year 1",
+#                 "Price Year 2",
+#                 "Price Year 3",
+#                 "Inventory Holding Cost Current",
+#                 "Inventory Holding Cost Year 1",
+#                 "Inventory Holding Cost Year 2",
+#                 "Inventory Holding Cost Year 3",
+#                 "Demand Current",
+#                 "Demand Year 1",
+#                 "Demand Year 2",
+#                 "Demand Year 3",
+#                 "Revenue",
+#                 "Cost",
+#             ],
+#             :,
+#         ],
+#     )
+#     st.dataframe(details_df, use_container_width=True)

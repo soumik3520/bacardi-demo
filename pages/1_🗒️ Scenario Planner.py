@@ -12,7 +12,6 @@ from st_aggrid import (
 # Header
 header_ui()
 sidebar_ui()
-
 # Custom CSS
 custom_css = {
     ".ag-header-cell-label": {"justify-content": "center"},
@@ -49,6 +48,5 @@ div.row-widget.stButton {
         text-align: center;
     }
 </style>"""
-st.markdown(metric_style, unsafe_allow_html=True)
-
+#st.markdown(metric_style, unsafe_allow_html=True)
 st.button(label="Run Scenario")

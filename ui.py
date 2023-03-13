@@ -101,3 +101,20 @@ def sidebar_ui():
     img = "./Bacardi-logo.png"
     add_logo(img)
 
+
+def insert_dummy_buttons():
+    names_list = [
+        "Product Inventory",
+        "Demand Profile",
+        "Price Profile",
+        "Cost Profile",
+        "Cpacity Projections",
+        "Capital Cost Projections",
+        "Margin Targets",
+        "Econometric Assumptions",
+        "Other Assumptions",
+    ]
+    with st.sidebar.expander("Click to access other views"):
+        st.write("temp")
+        for name_ in names_list:
+            st.sidebar.text_area(name_)
