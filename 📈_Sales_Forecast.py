@@ -2,6 +2,7 @@ from ui import header_ui, sidebar_ui
 from utils import read_app_data, build_line_chart,format_layout_fig, gen_sku_metrics
 import streamlit as st
 import numpy as np
+import pandas as pd
 
 # Header
 st.set_page_config(layout="wide")
@@ -56,8 +57,16 @@ filt_df = df.loc[cond1 & cond2 & cond3 & cond4]
 
 units_fig = build_line_chart(filt_df, x_col="Date", y_col="Units", color_col="SKU")
 units_fig = format_layout_fig(units_fig, title=f"Units Sales Actual and Forecasts")
+units_fig.add_vrect(x0=pd.to_datetime("2023-01-01"), x1=filt_df["Date"].max(), 
+              annotation_text="Forecasted Demand", annotation_position="top left",
+              annotation=dict(font_size=14, font_family="Times New Roman", font_color="black"),
+              fillcolor="red", opacity=0.1, line_width=0)
 value_fig = build_line_chart(filt_df, x_col="Date", y_col="Price", color_col="SKU")
 value_fig = format_layout_fig(value_fig, title=f"Price ($)", prefix=True)
+value_fig.add_vrect(x0=pd.to_datetime("2023-01-01"), x1=filt_df["Date"].max(), 
+              annotation_text="Expected Price", annotation_position="top left",
+              annotation=dict(font_size=14, font_family="Times New Roman", font_color="black"),
+              fillcolor="red", opacity=0.1, line_width=0)
 
 st.plotly_chart(units_fig, use_container_width=True)
 st.plotly_chart(value_fig, use_container_width=True)
