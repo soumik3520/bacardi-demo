@@ -11,6 +11,7 @@ from st_aggrid import (
     JsCode,
     ColumnsAutoSizeMode,
 )
+import openpyxl
 
 
 def read_data(file_name, separator=";"):
@@ -64,39 +65,40 @@ def read_data(file_name, separator=";"):
 
 @st.cache_data()
 def read_app_data():
-    df = pd.read_csv("data/sales_data.csv")
-    df["Market"] = "USA"
+    df = pd.read_excel("data/Bacardi-ToolData.xlsx", sheet_name="Data")
+
     return df
 
 
-def build_line_chart(df, x_col="Date", y_col="Units"):
+def build_line_chart(df, x_col="Year", y_col="Units"):
     # color = ["#D01E2F" if x == 0 else "goldenrod" for x in pred_flag]
-    x_data = df[x_col]
-    y_data = df[y_col]
-    fig = go.Figure()
-    fig = fig.add_trace(
-        go.Scatter(
-            x=x_data,
-            y=y_data,
-            mode="lines",
-            line={"color": "#D01E2F", "width": 2, "dash": "dot"},
-            name="Historical Sales"
-            # line_color=color,
-        )
-    )
 
-    x_data = df.loc[df["pred_flag"] == 1][x_col]
-    y_data = df.loc[df["pred_flag"] == 1][y_col]
-    fig = fig.add_trace(
-        go.Scatter(
-            x=x_data,
-            y=y_data,
-            mode="lines+markers",
-            line={"color": "#27A844", "width": 2},
-            name="Predictions"
-            # line_color=color,
+    sku_list = df["SKU"].unique()
+    df = df.loc[df["SKU"].isin(sku_list)]
+    color_list = [
+        "#EF553B",
+        "#00CC96",
+        "#AB63FA",
+        "#FFA15A",
+    ]
+    color_dict = dict(zip(sku_list, color_list[0 : len(sku_list)]))
+
+    fig = go.Figure()
+    for i in sku_list:
+        tt = df.loc[df["SKU"] == i]
+        x_data = tt[x_col]
+        y_data = tt[y_col]
+        fig = fig.add_trace(
+            go.Scatter(
+                x=x_data,
+                y=y_data,
+                mode="lines",
+                line={"color": color_dict[i], "width": 2, "dash": "dot"},
+                name="Sales - " + i,
+                # line_color=color,
+            )
         )
-    )
+
     fig.update_xaxes(
         showgrid=False, ticklabelmode="period", dtick="M1", tickformat="%m-%d-%Y"
     )
@@ -133,7 +135,7 @@ def format_layout_fig(fig, title="Unit Sales", x_axis_title="Date", prefix=False
 
 def gen_sku_metrics(df):
     tt = (
-        df.groupby(["SKU", "year"])
+        df.groupby(["Brand", "year"])
         .agg(
             Units=("Units", "sum"),
             Value=("Value", "sum"),
@@ -141,10 +143,10 @@ def gen_sku_metrics(df):
             MAPE=("MAPE", "mean"),
         )
         .reset_index()
-        .sort_values(by=["SKU", "year"])
+        .sort_values(by=["Brand", "year"])
     )
-    tt["unit_growth"] = tt.groupby(["SKU"])["Units"].pct_change()
-    tt["value_growth"] = tt.groupby(["SKU"])["Value"].pct_change()
+    tt["unit_growth"] = tt.groupby(["Brand"])["Units"].pct_change()
+    tt["value_growth"] = tt.groupby(["Brand"])["Value"].pct_change()
     out_dict = {
         "units_sales": tt.loc[tt["year"] == 2020]["Units"].values[0],
         "value_sales": tt.loc[tt["year"] == 2020]["Value"].values[0],

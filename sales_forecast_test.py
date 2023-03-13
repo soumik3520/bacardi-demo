@@ -37,6 +37,8 @@ filt_df = df.loc[cond1 & cond2 & cond3 & cond4]
 
 units_fig = build_line_chart(filt_df, x_col="Year", y_col="Units(in million cases)")
 units_fig = format_layout_fig(units_fig, title=f"Unit Sales")
-
+# value_fig = build_line_chart(filt_df, x_col="Date", y_col="Unit Price")
+# value_fig = format_layout_fig(value_fig, title=f"Price ($) - {sku_filter}", prefix=True)
 
 st.plotly_chart(units_fig, use_container_width=True)
+# st.plotly_chart(value_fig, use_container_width=True)

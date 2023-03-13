@@ -10,6 +10,7 @@ from st_aggrid import (
 )
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
+import plotly.graph_objects as go
 
 
 # Header
@@ -54,51 +55,22 @@ sel_scenario = [x["Name"] for x in selected_row]
 
 if len(sel_scenario) > 0:
     st.write("## Comparison of Selected Scenarios")
-    sel_cols = ["Metric"] + sel_scenario
-    details_df = read_scenario_details()
-    details_df = details_df[sel_cols]
-    details_df = details_df.set_index("Metric")
+    sc_data = sc_data.loc[sc_data.Name.isin(sel_scenario)].set_index("Name")[
+        ["revenue", "cost", "inv_cost", "profit", "prec_profit"]
+    ]
+    sc_data = sc_data.T
 
-    temp = LinearSegmentedColormap.from_list("rg", ["r", "w", "g"], N=256)
-    details_df = details_df.style.background_gradient(
-        cmap=temp, axis=1, subset=pd.IndexSlice[["Profit", "% Profit"], :]
-    )
+    traces = []
 
-    details_df = details_df.format(
-        formatter="{:.0%}",
-        subset=pd.IndexSlice[
-            [
-                "% Profit",
-                "Allocation Current",
-                "Allocation Year 1",
-                "Allocation Year 2",
-                "Allocation Year 3",
-            ],
-            :,
-        ],
-    )
+    for column in sc_data.columns:
 
-    details_df = details_df.format(
-        formatter="{:,.0f}",
-        subset=pd.IndexSlice[
-            [
-                "Profit",
-                "Price Current",
-                "Price Year 1",
-                "Price Year 2",
-                "Price Year 3",
-                "Inventory Holding Cost Current",
-                "Inventory Holding Cost Year 1",
-                "Inventory Holding Cost Year 2",
-                "Inventory Holding Cost Year 3",
-                "Demand Current",
-                "Demand Year 1",
-                "Demand Year 2",
-                "Demand Year 3",
-                "Revenue",
-                "Cost",
-            ],
-            :,
-        ],
+        trace = go.Bar(x=sc_data.index, y=sc_data[column], name=column)
+        traces.append(trace)
+    layout = go.Layout(
+        title=" Comparison of selected scenarios",
+        xaxis=dict(title="Name"),
+        yaxis=dict(title="values"),
+        barmode="group",
     )
-    st.dataframe(details_df, use_container_width=True)
+    comparison_fig = go.Figure(data=traces, layout=layout)
+    st.plotly_chart(comparison_fig, use_container_width=True)
