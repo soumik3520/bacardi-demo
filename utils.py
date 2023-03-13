@@ -48,16 +48,18 @@ def read_data(file_name, separator=";"):
     df["pred_flag"] = np.where(df["Date"].dt.year == 2021, 1, 0)
     df = df.drop(["Day", "Month", "Year", "Description", "n_weeks"], axis=1)
     df = df.sort_values(by=["SKU", "Date"])
-    df["R2"] = np.random.randint(low=55, high=85, size=df.shape[0])
-    df["R2"] = df.groupby(["SKU"])["R2"].transform("mean")
+    tt = df[["SKU"]].drop_duplicates()
+    tt["R2"] = np.random.randint(low=55, high=85, size=tt.shape[0])
+    df = pd.merge(df, tt)
+    # df["R2"] = df.groupby(["SKU"])["R2"].transform("min")
     df["MAPE"] = (100 - df["R2"]) / 2
     df["Unit Price"] = df["Value"] / df["Units"]
     df["Vol Price"] = df["Value"] / df["Volume"]
     return df
 
 
-tt = read_data("data/weekly_raw_data.csv")
-tt.to_csv("data/sales_data.csv", index=False)
+# tt = read_data("data/weekly_raw_data.csv")
+# tt.to_csv("data/sales_data.csv", index=False)
 
 
 @st.cache_data()
@@ -154,7 +156,7 @@ def gen_sku_metrics(df):
     return out_dict
 
 
-# @st.cache_data()
+@st.cache_data()
 def read_scenario_data():
     df = pd.read_excel("data/scenarios.xlsx", sheet_name="Scenarios Summary")
     df["Created Date"] = df["Created Date"].dt.normalize()
@@ -213,6 +215,52 @@ def gen_aggrid(df):
     return gd
 
 
+@st.cache_data()
 def read_scenario_details():
     df = pd.read_excel("data/scenarios.xlsx", sheet_name="Details")
     return df
+
+
+# @st.cache_data()
+def read_scenario_planner():
+    df = pd.read_excel("data/scenarios.xlsx", sheet_name="planner")
+    return df
+
+
+def gen_aggrid_sc(df):
+    gd = GridOptionsBuilder.from_dataframe(df)
+    # gd.configure_default_column(hide=True, editable=False)
+    gd.configure_column(
+        field="current",
+        header_name="Current",
+        hide=False,
+        type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+        valueFormatter="data.revenue.toLocaleString('en-US');",
+        editable=True,
+    )
+
+    gd.configure_column(
+        field="year_1",
+        header_name="Year 1",
+        hide=False,
+        type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+        valueFormatter="data.revenue.toLocaleString('en-US');",
+        editable=True,
+    )
+    gd.configure_column(
+        field="year_2",
+        header_name="Year 2",
+        hide=False,
+        type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+        valueFormatter="data.revenue.toLocaleString('en-US');",
+        editable=True,
+    )
+    gd.configure_column(
+        field="year_3",
+        header_name="Year 3",
+        hide=False,
+        type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+        valueFormatter="data.revenue.toLocaleString('en-US');",
+        editable=True,
+    )
+    return gd
