@@ -146,6 +146,7 @@ def read_scenario_data():
 def gen_aggrid(df):
     gd = GridOptionsBuilder.from_dataframe(df)
     # gd.configure_default_column(hide=True, editable=False)
+    gd.configure_default_column(type=["leftAligned"])
     gd.configure_column(
         field="Created Date",
         header_name="Created Date",

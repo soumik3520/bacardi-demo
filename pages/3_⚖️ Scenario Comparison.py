@@ -37,13 +37,19 @@ st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
 custom_css = {
     ".ag-header-cell-label": {"justify-content": "center"},
     "cellStyle": {"textAlign": "center"},
-    ".ag-row .ag-cell": {"display": "flex", "justify-content": "center"},
+    ".ag-cell": {"display": "flex", "justify-content": "center",},
+    # ".ag-cell": {"white-space": "break-spaces"},
 }
 
 
 # Aggrid generation
 gd = gen_aggrid(sc_data)
-gd.configure_selection(selection_mode="multiple", use_checkbox=True)
+gd.configure_column(
+    field="Name", header_name="Name", cellStyle={"white-sapces": "break-spaces"}
+)
+gd.configure_selection(
+    selection_mode="multiple", use_checkbox=True,
+)
 grid_options = gd.build()
 grid_table = AgGrid(
     sc_data,
