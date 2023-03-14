@@ -34,7 +34,7 @@ def gen_inv_ui():
         "Time Period",
         min_value=min(time_per),
         max_value=max(time_per),
-        key="inv_slider",
+        key="inv_slider",value=2032
     )
 
     cond1 = df["Market"] == market_filter

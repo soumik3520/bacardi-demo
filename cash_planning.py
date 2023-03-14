@@ -22,6 +22,7 @@ def gen_cash_ui():
         min_value=min(time_per),
         max_value=max(time_per),
         key="cash_slider",
+        value=2032,
     )
 
     cond1 = df["Market"] == market_filter

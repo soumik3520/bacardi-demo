@@ -18,7 +18,11 @@ def gen_cap_ui():
     col1.selectbox(label="Factory", options=["Factory 1", "Factory 2"])
     time_per = df["Year"].unique().tolist()
     time_filter = col2.slider(
-        "Time Period", min_value=min(time_per), max_value=max(time_per),key="cap_slider"
+        "Time Period",
+        min_value=min(time_per),
+        max_value=max(time_per),
+        key="cap_slider",
+        value=2032,
     )
 
     cond1 = df["Market"] == "US"
