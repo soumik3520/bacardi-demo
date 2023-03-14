@@ -16,6 +16,7 @@ sidebar_ui()
 custom_css = {
     ".ag-header-cell-label": {"justify-content": "center"},
     "cellStyle": {"textAlign": "center"},
+    ".ag-row .ag-cell": {"display": "flex","justify-content": "center"}
 }
 
 
@@ -24,6 +25,9 @@ sc_data = read_scenario_planner()
 categories = sc_data["category"].unique().tolist()
 category_filter = st.sidebar.selectbox("Category", options=categories)
 sc_data = sc_data.loc[sc_data["category"]==category_filter]
+skus = sc_data["sku"].unique()
+sku_filter = st.sidebar.selectbox("SKU", options=skus)
+sc_data = sc_data.loc[sc_data["sku"]==sku_filter]
 capacity = sc_data["capacity"].max()
 st.sidebar.text_input(label="Maximum Capacity", value=capacity, disabled=False)
 gd = gen_aggrid_sc(sc_data)
@@ -66,7 +70,7 @@ if st.session_state.get("button_pressed",0)==1:
     with col1:
         st.metric(value="$275K", label="Revenue ($)", delta="10% (From Baseline)")
     with col2:
-        st.metric(value="$25K", label="Cost ($)", delta="-5% (From Baseline)", delta_color="inverse")
+        st.metric(value="$175K", label="Cost ($)", delta="-5% (From Baseline)", delta_color="inverse")
     with col3:
         st.metric(value="$100K", label="Profit", delta="10% (From Baseline)")
 

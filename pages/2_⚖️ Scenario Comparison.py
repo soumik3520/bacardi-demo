@@ -33,9 +33,11 @@ hide_dataframe_row_index = """
             """
 st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
 
+# Custom CSS
 custom_css = {
     ".ag-header-cell-label": {"justify-content": "center"},
     "cellStyle": {"textAlign": "center"},
+    ".ag-row .ag-cell": {"display": "flex", "justify-content": "center"},
 }
 
 

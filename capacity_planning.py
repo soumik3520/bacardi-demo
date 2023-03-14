@@ -27,8 +27,8 @@ def gen_cap_ui():
 
     cond1 = df["Market"] == "US"
     cond2 = df["Category"] == "Rum"
-    cond3 = df["Sub-Category"] == "Dark"
-    cond4 = df["SKU"] == "BACARDÍ CARTA ORO"
+    cond3 = df["Sub-Category"] == "Gold"
+    cond4 = df["SKU"] == "BACARDÍ ANEJO CUATRO(4yr)"
     cond5 = df["Year"] <= time_filter
     filt_df = df.loc[cond1 & cond2 & cond3 & cond4 & cond5]
     filt_df = filt_df[["Date", "Year", "SKU", "Price"]].drop_duplicates(subset=["Date"])

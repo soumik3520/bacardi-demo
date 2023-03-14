@@ -82,7 +82,7 @@ def build_line_chart(df, x_col="Date", y_col="Units", color_col="SKU"):
     return fig
 
 
-def format_layout_fig(fig, title="Unit Sales", x_axis_title="Date", prefix=False):
+def format_layout_fig(fig, title="Unit Sales", x_axis_title="Year", prefix=False):
     fig.update_layout(title_text=title)
     fig.update_xaxes(
         title_text=x_axis_title,
@@ -170,7 +170,7 @@ def gen_aggrid(df):
     gd.configure_column(
         field="inv_cost",
         header_name="Inventory Cost ($)",
-        hide=False,
+        hide=True,
         type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
         valueFormatter="data.inv_cost.toLocaleString('en-US');",
     )
@@ -223,9 +223,13 @@ def gen_aggrid_sc(df):
 
     gd.configure_column(
         field="age",
-        header_name="Aged Years",
+        header_name="Demand Horizon(yrs)",
         hide=False,
-        type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+        type=[
+            # "numericColumn",
+            # "numberColumnFilter",
+            # "customNumericFormat",
+        ],
         valueFormatter="data.age.toLocaleString('en-US');",
         editable=False,
     )

@@ -28,7 +28,7 @@ def gen_cash_ui():
     cond1 = df["Market"] == market_filter
     # cond2 = df["Category"] == "Rum"
     # cond3 = df["Sub-Category"] == "Dark"
-    cond4 = df["SKU"].isin(["BACARDÍ CARTA ORO", "BACARDÍ COCONUT"])
+    cond4 = df["SKU"].isin(["BACARDÍ ANEJO CUATRO(4yr)"])
     cond5 = df["Year"] <= time_filter
     filt_df = df.loc[cond1 & cond4 & cond5]
     filt_df = filt_df[["Date", "Year", "SKU", "Price"]].drop_duplicates(subset=["Date"])
@@ -43,7 +43,7 @@ def gen_cash_ui():
     # st.dataframe(filt_df)
 
     inv_fig = px.line(filt_df, x="Date", y="Inventory Holding")
-    inv_fig = format_layout_fig(inv_fig, title="Factory Capacity", x_axis_title="")
+    inv_fig = format_layout_fig(inv_fig, title="Available Cash ($)", x_axis_title="")
     inv_fig = inv_fig.update_layout(yaxis_title="Cash ($)", showlegend=False,)
 
     fig = mult_yaxis_plot(

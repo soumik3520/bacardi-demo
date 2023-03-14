@@ -23,9 +23,10 @@ with st.sidebar:
 
 sub_categories = df.loc[(df["Category"]==cat_filter) & (df["Market"]==market_filter)]["Sub-Category"].unique()
 with st.sidebar:
-    subcat_filter = st.selectbox(label="Sub Category",options=sub_categories)
+    subcat_filter = st.selectbox(label="Sub Category",options=sub_categories,index=1)
 
 sku = df.loc[df["Sub-Category"]==subcat_filter]["SKU"].unique()
+
 with st.sidebar:
     sku_filter = st.multiselect(label="SKU",options=sku, default=sku[0])
 
@@ -34,6 +35,7 @@ cond2 = df["Category"] == cat_filter
 cond3 = df["Sub-Category"] == subcat_filter
 cond4 = df["SKU"].isin(sku_filter)
 filt_df = df.loc[cond1 & cond2 & cond3 & cond4]
+
 
 # # Metric Boxes
 # sku_metrics = gen_sku_metrics(filt_df)
