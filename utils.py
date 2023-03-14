@@ -162,7 +162,7 @@ def gen_aggrid(df):
     )
     gd.configure_column(
         field="cost",
-        header_name="Cost ($)",
+        header_name="Capital Costs ($)",
         hide=False,
         type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
         valueFormatter="data.cost.toLocaleString('en-US');",
