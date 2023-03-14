@@ -3,6 +3,7 @@ import capacity_planning, cash_planning, inventory_planning
 from ui import header_ui, sidebar_ui
 
 # Header
+st.set_page_config(layout="wide")
 header_ui()
 sidebar_ui()
 

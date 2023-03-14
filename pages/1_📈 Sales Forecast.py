@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 # Header
-st.set_page_config(layout="wide")
+
 header_ui()
 sidebar_ui()
 # Read data
